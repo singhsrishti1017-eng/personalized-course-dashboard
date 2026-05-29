@@ -43,14 +43,12 @@ filtered_df = df[
 total_revenue = filtered_df["Amount"].sum()
 total_users = filtered_df["UserID"].nunique()
 total_courses = filtered_df["CourseID"].nunique()
-avg_rating = filtered_df["Rating"].mean()
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3 = st.columns(3)
 
 col1.metric("💰 Total Revenue", f"₹{total_revenue:,.0f}")
 col2.metric("👨‍🎓 Total Learners", total_users)
 col3.metric("📚 Total Courses", total_courses)
-col4.metric("⭐ Average Rating", f"{avg_rating:.1f}")
 
 st.markdown("---")
 
@@ -125,18 +123,6 @@ fig4 = px.line(
 
 st.plotly_chart(fig4, use_container_width=True)
 
-# Ratings Distribution
-st.subheader("⭐ Course Rating Distribution")
-
-fig5 = px.histogram(
-    filtered_df,
-    x="Rating",
-    nbins=10,
-    title="Ratings Distribution"
-)
-
-st.plotly_chart(fig5, use_container_width=True)
-
 # Learner Age Distribution
 st.subheader("👥 Learner Age Distribution")
 
@@ -152,16 +138,18 @@ st.plotly_chart(fig6, use_container_width=True)
 # Recommendation Insights
 st.subheader("🤖 Recommendation Insights")
 
-recommended = (
-    filtered_df.groupby("CourseName")["Rating"]
-    .mean()
-    .reset_index()
-    .sort_values(by="Rating", ascending=False)
+# Most Popular Courses
+st.subheader("🔥 Most Popular Courses")
+
+popular = (
+    filtered_df.groupby("CourseName")
+    .size()
+    .reset_index(name="Enrollments")
+    .sort_values(by="Enrollments", ascending=False)
     .head(5)
 )
 
-st.table(recommended)
-
+st.table(popular)
 # Footer
 st.markdown("---")
 st.markdown("### ✅ Developed by Srishti Singh")
